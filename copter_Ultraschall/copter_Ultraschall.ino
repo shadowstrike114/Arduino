@@ -10,10 +10,11 @@ double integral = 0;
 long anzahl;
 boolean vorher;
 double differenz;
+double letzteDifferenz;
 double abstand;
 
-double kP = 0.2;
-double kI = 0.5;
+double kP = 0.17;
+double kI = 0.002;
 double kD = 0;
 
 double P;
@@ -78,18 +79,21 @@ void hoehehalten()
     if (dist > 50)
       differenz = haltehoehe - (dist / 5); //nach unten positiv nach oben negativ
 
-    integral += differenz;
-    anzahl++;
-
 
     //Proportional
     P = map(differenz,-400, 400,-1000,1000);  
 
     //Integral
-
+    integral += differenz;
+    anzahl++;
+    
+    //Differential
+    static long letzteZeit;
+    D = (differenz - letzteDifferenz)/micros() - letzteZeit;
+    letzteDifferenz = differenz;
 
     //Anwenden
-    sigout = sigein+ kP * P;// + kI * integral;
+    sigout = sigein+ kP * P + kI * integral + kD * D;
 
     if (sigout > 1800)
       sigout = 1800;
